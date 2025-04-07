@@ -1,0 +1,34 @@
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "Moli"
+name = "REPOSoundBoard"
+versionNumber = "0.1.0"
+description = "Adds a simple soundboard to the game that works with proximity voice chat. Uses hotkeys to play the sound buttons."
+websiteUrl = "https://github.com/moli-03/repo-soundboard"
+containsNsfwContent = false
+[package.dependencies]
+BepInEx-BepInExPack = "5.4.2100"
+
+
+[build]
+icon = "./icon.png"
+readme = "./README.md"
+outdir = "./thunderstore"
+
+[[build.copy]]
+source = "./REPOSoundBoard/bin/Release/netstandard2.1/REPOSoundBoard.dll"
+target = "./"
+
+[[build.copy]]
+source = "./CHANGELOG.md"
+target = "./"
+
+
+[publish]
+repository = "https://thunderstore.io"
+communities = [ "R.E.P.O" ]
+[publish.categories]
+repo = [ "Audio", "Client-side", "Mods" ]
+
