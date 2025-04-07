@@ -17,36 +17,38 @@ You can find the game directory by navigating to:
 `Steam > R.E.P.O > Settings > Manage > Search Local Files`
 
 ### Configuration File Structure
-Below is an example of the `soundboard-config.json` file structure. Make sure to remove the comments (the part `// yap yap yap`) in your config file.
+Below is an example of the `soundboard-config.json` file structure. Make sure to keep it a valid JSON Syntax.
+
+#### Important Notes:
+- The `Path` to the audio file has to be absolute (meaning it has to start from C:\\).
+- The `Volume` is a value from 0 to 1 and adjusts the volume only for you.
+- For the names of `Keys` refer to [Unity KeyCode documentation](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/KeyCode.html).
 
 ```json
 {
     "SoundBoard": {
         "StopHotkey": {
-            "Keys": ["H"] // The hotkey to stop all playing sounds.
+            "Keys": ["H"]
         },
         "SoundButtons": [
             {
-                "Path": "C:\\Path\\To\\Your\\Clip.wav", // Absolute path to your sound clip. Double \\ are important
-                "Volume": 0.7, // Volume level (0 to 1).
+                "Path": "C:\\Path\\To\\Your\\Clip.wav",
+                "Volume": 0.7,
                 "Hotkey": {
-                    "Keys": ["LeftControl", "Alpha1"] // Keys to press for playback (e.g., Ctrl+1).
+                    "Keys": ["LeftControl", "Alpha1"]
                 }
-            }, // <- Imporant comma here :)
-            // Add more as you want
+            },
             {
                 "Path": "C:\\WhereEver\\OtherClip.wav",
                 "Volume": 0.4,
                 "Hotkey": {
                     "Keys": ["Keypad0"]
                 }
-            } // <- No camma on the last one here :)
+            }
         ]
     }
 }
 ```
-
-> **Note:** For key names, refer to the [Unity KeyCode documentation](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/KeyCode.html).
 
 ## Converting to `.wav` Format
 If your sound file is not in `.wav` format, you can convert it using the following methods:
@@ -65,7 +67,7 @@ To convert locally, follow these steps:
    ```
 4. Convert the file using the following command:
    ```bash
-   ffmpeg -i <inputfile.mp3> outputfile.wav
+   ffmpeg -i <inputfile.mp3> <outputfile.wav>
    ```
    Replace `<inputfile.mp3>` with your file name and `<outputfile.wav>` with the desired output name.
 5. The `.wav` file will be created in the same directory.
