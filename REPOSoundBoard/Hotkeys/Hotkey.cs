@@ -34,35 +34,6 @@ namespace REPOSoundBoard.Hotkeys
             Keys = keys;
         }
 
-        public static bool TryParse(string serializedHotkey, [CanBeNull] Action callback, out Hotkey hotkey)
-        {
-            var parts = serializedHotkey.Split('+');
-            
-            List<KeyCode> keys = new List<KeyCode>();
-
-            foreach (var part in parts)
-            {
-                if (Enum.TryParse(part, out KeyCode key))
-                {
-                    keys.Add(key);
-                }
-                else
-                {
-                    hotkey = null;
-                    return false;
-                }
-            }
-
-            if (keys.Count == 0)
-            {
-                hotkey = null;
-                return false;
-            }
-
-            hotkey = new Hotkey(keys, callback);
-            return true;
-        }
-
         public Hotkey OnPressed(Action callback)
         {
             this.Callback = callback;

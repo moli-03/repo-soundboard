@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using BepInEx;
 
 namespace REPOSoundBoard.Config
 {
@@ -16,7 +17,7 @@ namespace REPOSoundBoard.Config
         
         public static AppConfig LoadConfig()
         {
-            ConfigFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "soundboard-config.json");
+            ConfigFilePath = Path.Combine(Paths.ConfigPath, "Moli.REPOSoundBoard.json");
 
             AppConfig config = new AppConfig();
 

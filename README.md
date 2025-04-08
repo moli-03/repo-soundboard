@@ -1,23 +1,25 @@
 # REPO SoundBoard Mod
 
 ## Description
-REPO SoundBoard Mod is a customizable soundboard application that allows you to play your own sound buttons with ease.
+REPO SoundBoard Mod is a customizable soundboard that allows you to play your own sound buttons through proximity voice chat.
 
 ## Features
-- Add and play custom sound buttons.
-- Hotkey support for quick sound playback.
-- Supports `.wav` audio files.
-- Adjustable (local) volume for each sound button.
+- Add and play custom sound buttons
+- Hotkey support
+- Supports `.wav` audio files
+- Adjustable (local) volume for each sound button
 
 ## Usage
-Sound buttons can be configured using a JSON configuration file named `soundboard-config.json` located in the game's directory.
+Sound buttons can be configured using a JSON configuration file named `Moli.REPOSoundBoard.json` located in the 
+BepInEx config directory of your Thunderstorm game profile.
 
-### Locating the Game Directory
-You can find the game directory by navigating to:
-`Steam > R.E.P.O > Settings > Manage > Search Local Files`
+### Locating the config directory
+You can locate the BepInEx config directory directly inside Thunderstorm. Go to `R.E.P.O. > (your profile) > Settings > Browse profile folder`.
+This will open the Explorer and in there you can navigate to `BepInEx > config`. Inside this directory you should 
+see the `Moli.REPOSoundBoard.json` config file. If it does not exist your can create it.
 
 ### Configuration File Structure
-Below is an example of the `soundboard-config.json` file structure. Make sure to keep it a valid JSON Syntax.
+Below is an example of the `Moli.REPOSoundBoard.json` file structure.
 
 #### Important Notes:
 - The `Path` to the audio file has to be absolute (meaning it has to start from C:\\).
@@ -73,7 +75,7 @@ To convert locally, follow these steps:
 5. The `.wav` file will be created in the same directory.
 
 ## Troubleshooting
-- Ensure the config file exists in your game folder and has the correct name.
+- Ensure the config file exists and has the correct name.
 - Ensure the file paths in the configuration file are absolute (starting from C:\\) and correctly formatted.
 - Verify that the `.wav` files are not corrupted and can be played in other media players.
 - Check that the keys for the hotkey have the correct names.

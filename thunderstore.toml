@@ -25,10 +25,14 @@ target = "./"
 source = "./CHANGELOG.md"
 target = "./"
 
+[[build.copy]]
+source = "./sample.config.json"
+target = "./BepInEx/config/Moli.REPOSoundBoard.json"
+
 
 [publish]
 repository = "https://thunderstore.io"
-communities = [ "R.E.P.O" ]
+communities = [ "repo" ]
 [publish.categories]
 repo = [ "Audio", "Client-side", "Mods" ]
 

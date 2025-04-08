@@ -1,0 +1,23 @@
+{
+    "SoundBoard": {
+        "StopHotkey": {
+            "Keys": ["H"]
+        },
+        "SoundButtons": [
+            {
+                "Path": "C:\\Path\\To\\Your\\Clip.wav",
+                "Volume": 0.7,
+                "Hotkey": {
+                    "Keys": ["LeftControl", "Alpha1"]
+                }
+            },
+            {
+                "Path": "C:\\WhereEver\\OtherClip.wav",
+                "Volume": 0.4,
+                "Hotkey": {
+                    "Keys": ["Keypad0"]
+                }
+            }
+        ]
+    }
+}
