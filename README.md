@@ -16,7 +16,7 @@ BepInEx config directory of your Thunderstorm game profile.
 ### Locating the config directory
 You can locate the BepInEx config directory directly inside Thunderstorm. Go to `R.E.P.O. > (your profile) > Settings > Browse profile folder`.
 This will open the Explorer and in there you can navigate to `BepInEx > config`. Inside this directory you should 
-see the `Moli.REPOSoundBoard.json` config file. If it does not exist your can create it.
+see the `Moli.REPOSoundBoard.json` config file. If it does not exist you can create it.
 
 ### Configuration File Structure
 Below is an example of the `Moli.REPOSoundBoard.json` file structure.
@@ -53,7 +53,7 @@ Below is an example of the `Moli.REPOSoundBoard.json` file structure.
 ```
 
 ## Converting to `.wav` Format
-If your sound file is not in `.wav` format, you can convert it using the following methods:
+If your audio file is not in `.wav` format, you can convert it using the following methods:
 
 ### Online Tools
 Use online converters to easily transform `.mp3` or other formats into `.wav`.
