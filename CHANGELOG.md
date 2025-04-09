@@ -6,8 +6,8 @@ All notable changes to the mod will be documented in this file.
 
 ### Added
 - Added support for various audio and video formats:
-	- Audio: `mp3`, `aiff`, `ogg`
-	- Video: `avi`, `mov`, `mp4`, `webm`
+	- Audio: `mp3`, `aiff`
+	- Video: `avi`, `mov`, `mp4`, `webm`, `ogg`
 
 ### Fixed
 - Fixed audio playback issue where sounds would cut off when triggered multiple times

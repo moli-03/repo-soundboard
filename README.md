@@ -34,8 +34,8 @@ A customizable soundboard mod for REPO that lets you play custom sounds through 
 - Global stop hotkey
 
 ### Supported Formats
-- **Audio**: `.wav`, `.mp3`
-- **Video** (requires ffmpeg): `.aiff`, `.avi`, `.mov`, `.mp4`, `.ogg`, `.webm`
+- **Audio**: `.wav`, `.mp3`, `.aiff`
+- **Video** (requires ffmpeg): `.avi`, `.mov`, `.mp4`, `.ogg`, `.webm`
 
 ### Planned Features
 - [x] More format support
