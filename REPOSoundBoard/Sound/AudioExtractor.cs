@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace REPOSoundBoard.Sound
 {

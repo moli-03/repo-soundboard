@@ -1,33 +1,63 @@
 # REPO SoundBoard Mod
 
-## Description
-REPO SoundBoard Mod is a customizable soundboard that allows you to play your own sound buttons through proximity voice chat.
+A customizable soundboard mod for REPO that lets you play custom sounds through proximity voice chat using hotkeys.
+
+## Table of Contents
+- [REPO SoundBoard Mod](#repo-soundboard-mod)
+	- [Table of Contents](#table-of-contents)
+	- [Quick Start](#quick-start)
+	- [Features](#features)
+		- [Core Features](#core-features)
+		- [Supported Formats](#supported-formats)
+		- [Planned Features](#planned-features)
+	- [Installation](#installation)
+		- [Config Location](#config-location)
+		- [Configuration File Structure](#configuration-file-structure)
+			- [Important Notes](#important-notes)
+	- [Video Format Support](#video-format-support)
+	- [Troubleshooting](#troubleshooting)
+		- [Common Issues](#common-issues)
+		- [Need Help?](#need-help)
+
+## Quick Start
+1. Install the mod via Thunderstore
+2. Install [ffmpeg](https://www.ffmpeg.org/download.html) if you plan to use video files
+3. Create/edit `Moli.REPOSoundBoard.json` in your BepInEx config folder
+4. Add your sound buttons with hotkeys
+5. Use the configured hotkeys in-game to play sounds
 
 ## Features
-- Add and play custom sound buttons
-- Hotkey support
-- Supports `.wav` audio files
-- Adjustable (local) volume for each sound button
+### Core Features
+- Custom sound button support with hotkey bindings
+- Per-sound volume control (locally)
+- Proximity-based audio playback
+- Global stop hotkey
 
-## Planed features
-- [ ] Support for more media formats
-- [ ] InGame UI to manage sound buttons 
-- [ ] Adjustable volume for others
+### Supported Formats
+- **Audio**: `.wav`, `.mp3`
+- **Video** (requires ffmpeg): `.aiff`, `.avi`, `.mov`, `.mp4`, `.ogg`, `.webm`
 
-## Usage
-Sound buttons can be configured using a JSON configuration file named `Moli.REPOSoundBoard.json` located in the 
-BepInEx config directory of your Thunderstore game profile.
+### Planned Features
+- [x] More format support
+- [ ] In-game UI for sound board management
+- [ ] Remote volume control
+- [ ] Automatic cleanup of cached video audio
 
-### Locating the config directory
-You can locate the BepInEx config directory directly inside Thunderstore. Go to `R.E.P.O. > (your profile) > Settings > Browse profile folder`.
-This will open the explorer and in there you can navigate to `BepInEx > config`. Inside this directory you should 
-see the `Moli.REPOSoundBoard.json` config file. If it does not exist you can create it.
+## Installation
+1. Install via Thunderstore App or manually place in BepInEx/plugins
+2. For video support: Install [ffmpeg](https://www.ffmpeg.org/download.html)
+3. Launch game once to generate config file
+4. Configure your soundboard in `Moli.REPOSoundBoard.json`
+
+### Config Location
+- Thunderstore: `Thunderstore App > R.E.P.O > (profile) > Edit config`
+- Manual: `%appdata%\Thunderstore Mod Manager\DataFolder\REPO\profiles\(profile)\BepInEx\config`
 
 ### Configuration File Structure
 Below is an example of the `Moli.REPOSoundBoard.json` file structure.
 
-#### Important Notes:
-- The `Path` to the audio file has to be absolute (meaning it has to start from C:\\).
+#### Important Notes
+- The `Path` to the file has to be absolute (= start from e.g. C:\\ or D:\\) and the double \\\\ are required in the path.
 - The `Volume` is a value from 0 to 1 and adjusts the volume only for you.
 - For the names of `Keys` refer to [Unity KeyCode documentation](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/KeyCode.html).
 
@@ -46,7 +76,7 @@ Below is an example of the `Moli.REPOSoundBoard.json` file structure.
                 }
             },
             {
-                "Path": "C:\\WhereEver\\OtherClip.wav",
+                "Path": "C:\\WhereEver\\OtherClip.mp4",
                 "Volume": 0.4,
                 "Hotkey": {
                     "Keys": ["Keypad0"]
@@ -57,30 +87,22 @@ Below is an example of the `Moli.REPOSoundBoard.json` file structure.
 }
 ```
 
-## Converting to `.wav` Format
-If your audio file is not in `.wav` format, you can convert it using the following methods:
-
-### Online Tools
-Use online converters to easily transform `.mp3` or other formats into `.wav`.
-
-### Local Conversion
-To convert locally, follow these steps:
-
-1. Download and install `ffmpeg` from [ffmpeg.org](https://www.ffmpeg.org/download.html).
-2. Open a terminal window (press `Win + R`, type `cmd`, and press Enter).
-3. Navigate to the directory containing your sound file:
-   ```bash
-   cd C:\path\to\soundbutton\
-   ```
-4. Convert the file using the following command:
-   ```bash
-   ffmpeg -i <inputfile.mp3> <outputfile.wav>
-   ```
-   Replace `<inputfile.mp3>` with your file name and `<outputfile.wav>` with the desired output name.
-5. The `.wav` file will be created in the same directory.
+## Video Format Support
+When using video files as sound sources:
+- Files are automatically converted to `.wav` format
+- Converted files are cached as `audio_<clip_name>.wav` in the same directory as the video.
+- Conversion happens only once per file
+- Delete the cached `.wav` file manually if you update the source video
 
 ## Troubleshooting
-- Ensure the config file exists and has the correct name.
-- Ensure the file paths in the configuration file are absolute (starting from C:\\) and correctly formatted.
-- Verify that the `.wav` files are not corrupted and can be played in other media players.
-- Check that the keys for the hotkey have the correct names.
+### Common Issues
+- Config file missing or misnamed
+- Incorrect file paths (must be absolute, using double backslashes)
+- Corrupted audio/video files
+- Incorrect hotkey names (check [Unity KeyCode reference](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/KeyCode.html))
+
+### Need Help?
+Open an issue on our [GitHub repository](https://github.com/moli-03/repo-soundboard/issues) for:
+- Bug reports
+- Feature requests
+- General support
