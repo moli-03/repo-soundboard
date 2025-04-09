@@ -40,6 +40,7 @@ A customizable soundboard mod for REPO that lets you play custom sounds through 
 ### Planned Features
 - [x] More format support
 - [ ] In-game UI for sound board management
+- [ ] Enable/disable entire soundboard / sound buttons
 - [ ] Remote volume control
 - [ ] Automatic cleanup of cached video audio
 
@@ -89,7 +90,7 @@ Below is an example of the `Moli.REPOSoundBoard.json` file structure.
 
 ## Video Format Support
 When using video files as sound sources:
-- Files are automatically converted to `.wav` format
+- Files are automatically converted to the `.wav` format
 - Converted files are cached as `audio_<clip_name>.wav` in the same directory as the video.
 - Conversion happens only once per file
 - Delete the cached `.wav` file manually if you update the source video

@@ -1,12 +1,10 @@
-﻿using System;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using REPOSoundBoard.Sound;
 using REPOSoundBoard.Config;
 using REPOSoundBoard.Hotkeys;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace REPOSoundBoard
 {
@@ -15,7 +13,7 @@ namespace REPOSoundBoard
     {
         private const string GUID = "com.moli.repo-soundboard";
         private const string NAME = "REPOSoundBoard";
-        private const string VERSION = "0.1.0";
+        private const string VERSION = "0.1.1";
         
         private static Harmony _harmony = new Harmony(GUID);
         public static REPOSoundBoard Instance { get; private set; }
