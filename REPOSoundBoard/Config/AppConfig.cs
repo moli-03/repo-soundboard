@@ -24,10 +24,7 @@ namespace REPOSoundBoard.Config
             try
             {
                 string content = File.ReadAllText(ConfigFilePath);
-                REPOSoundBoard.Instance.LOG.LogInfo("Path: " + ConfigFilePath);
-                REPOSoundBoard.Instance.LOG.LogInfo("Config: " + content);
                 config = ConfigSerializer.DeserializeConfig(content);
-                REPOSoundBoard.Instance.LOG.LogInfo("Loaded config: " + config);
                 return config;
             }
             catch (Exception e)

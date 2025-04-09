@@ -9,13 +9,18 @@ REPO SoundBoard Mod is a customizable soundboard that allows you to play your ow
 - Supports `.wav` audio files
 - Adjustable (local) volume for each sound button
 
+## Planed features
+- [ ] Support for more media formats
+- [ ] InGame UI to manage sound buttons 
+- [ ] Adjustable volume for others
+
 ## Usage
 Sound buttons can be configured using a JSON configuration file named `Moli.REPOSoundBoard.json` located in the 
-BepInEx config directory of your Thunderstorm game profile.
+BepInEx config directory of your Thunderstore game profile.
 
 ### Locating the config directory
-You can locate the BepInEx config directory directly inside Thunderstorm. Go to `R.E.P.O. > (your profile) > Settings > Browse profile folder`.
-This will open the Explorer and in there you can navigate to `BepInEx > config`. Inside this directory you should 
+You can locate the BepInEx config directory directly inside Thunderstore. Go to `R.E.P.O. > (your profile) > Settings > Browse profile folder`.
+This will open the explorer and in there you can navigate to `BepInEx > config`. Inside this directory you should 
 see the `Moli.REPOSoundBoard.json` config file. If it does not exist you can create it.
 
 ### Configuration File Structure

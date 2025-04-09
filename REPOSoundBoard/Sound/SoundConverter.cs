@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace REPOSoundBoard.Sound
 {
@@ -9,7 +10,6 @@ namespace REPOSoundBoard.Sound
             // Check if the clip is already mono, return it if so
             if (stereoClip.channels == 1)
             {
-                REPOSoundBoard.Instance.LOG.LogInfo("AudioClip is already mono. No conversion needed.");
                 return stereoClip;
             }
     
@@ -29,18 +29,26 @@ namespace REPOSoundBoard.Sound
             }
     
             // Create a new mono AudioClip
-            AudioClip monoClip = AudioClip.Create(
-                stereoClip.name + " (Mono)", 
-                monoSamples,
-                1, // 1 channel for mono
-                stereoClip.frequency,
-                false // Not 3D
-            );
-    
-            // Set the mono data into the new clip
-            monoClip.SetData(monoData, 0);
-    
-            return monoClip;
+            try
+            {
+                AudioClip monoClip = AudioClip.Create(
+                    stereoClip.name + " (Mono)",
+                    monoSamples,
+                    1, // 1 channel for mono
+                    stereoClip.frequency,
+                    false // Not 3D
+                );
+
+                // Set the mono data into the new clip
+                monoClip.SetData(monoData, 0);
+
+                return monoClip;
+            }
+            catch (Exception e)
+            {
+                REPOSoundBoard.Instance.LOG.LogWarning($"Failed to convert clip {stereoClip.name} to mono. Error: {e.Message}");
+                return null;
+            }
         }
     }
 }
