@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
     <ItemGroup>
@@ -71,6 +72,10 @@
         <Reference Include="UnityEngine.VideoModule">
           <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\REPO\REPO_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
         </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NAudio" Version="2.2.1" />
     </ItemGroup>
     
 </Project>

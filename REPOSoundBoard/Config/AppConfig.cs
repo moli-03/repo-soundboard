@@ -29,7 +29,7 @@ namespace REPOSoundBoard.Config
             }
             catch (Exception e)
             {
-                REPOSoundBoard.Instance.LOG.LogWarning("Failed to read config file" + e.Message);
+                REPOSoundBoard.Logger.LogWarning("Failed to read config file" + e.Message);
             }
 
             return config;

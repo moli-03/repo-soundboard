@@ -1,10 +1,13 @@
 {
     "SoundBoard": {
+        "Enabled": true,
         "StopHotkey": {
             "Keys": ["H"]
         },
         "SoundButtons": [
             {
+                "Name": "First sound button",
+                "Enabled": true,
                 "Path": "C:\\Path\\To\\Your\\Clip.wav",
                 "Volume": 0.7,
                 "Hotkey": {
@@ -12,6 +15,8 @@
                 }
             },
             {
+                "Name": "Other sound button",
+                "Enabled": false,
                 "Path": "C:\\WhereEver\\OtherClip.wav",
                 "Volume": 0.4,
                 "Hotkey": {

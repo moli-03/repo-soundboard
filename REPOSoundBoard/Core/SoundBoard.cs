@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using Photon.Voice.Unity;
 using REPOSoundBoard.Config;
+using REPOSoundBoard.Core.Media;
+using REPOSoundBoard.Hotkeys;
 using UnityEngine;
 
-namespace REPOSoundBoard.Sound
+namespace REPOSoundBoard.Core
 {
     public class SoundBoard : MonoBehaviour
     {
@@ -13,15 +15,23 @@ namespace REPOSoundBoard.Sound
 
         private Recorder _recorder;
         private AudioSource _audioSource;
+        private Hotkey _stopHotkey;
         private bool _isPlaying;
+        private bool _enabled;
         private SoundButton _currentSoundButton;
         private Coroutine _playCoroutine;
 
         public void LoadConfig(SoundBoardConfig config)
         {
-            config.StopHotkey.OnPressed(this.StopCurrent);
+            // Enable/disabled
+            this._enabled = config.Enabled;
+            
+            // Stop hotkey
+            this._stopHotkey = config.StopHotkey;
+            this._stopHotkey.OnPressed(this.StopCurrent);
             REPOSoundBoard.Instance.HotkeyManager.RegisterHotkey(config.StopHotkey);
 
+            // Sound buttons
             foreach (var configSoundButton in config.SoundButtons)
             {
                 if (configSoundButton.Hotkey == null || configSoundButton.Path == null)
@@ -31,7 +41,7 @@ namespace REPOSoundBoard.Sound
 
                 var mediaClip = new MediaClip(configSoundButton.Path);
                 this.StartCoroutine(mediaClip.Load());
-                var soundButton = new SoundButton(mediaClip, configSoundButton.Hotkey, configSoundButton.Volume);
+                var soundButton = new SoundButton(configSoundButton.Name, configSoundButton.Volume, configSoundButton.Hotkey, mediaClip);
 
                 this.AddSoundButton(soundButton);
             }
@@ -57,20 +67,23 @@ namespace REPOSoundBoard.Sound
         public void ChangeRecorder(Recorder recorder)
         {
             this.StopCurrent();
-
             this._recorder = recorder;
         }
 
         public void ChangeAudioSource(AudioSource source)
         {
             this.StopCurrent();
-
             this._audioSource = source;
         }
 
         private IEnumerator Play(SoundButton soundButton)
         {
-            if (this._recorder == null || this._audioSource == null || !soundButton.Clip.IsLoaded) {
+            if (!this._enabled || !soundButton.Enabled)
+            {
+                yield break;
+            }
+            
+            if (this._recorder == null || this._audioSource == null || soundButton.Clip.State != MediaClip.MediaClipState.Loaded) {
 				yield break;
 			}
 
@@ -121,6 +134,29 @@ namespace REPOSoundBoard.Sound
 
             this._isPlaying = false;
             this._currentSoundButton = null;
+        }
+
+        private void OnDestroy()
+        {
+            // Update the config
+            var soundBoardConfig = new SoundBoardConfig();
+            soundBoardConfig.Enabled = this._enabled;
+            soundBoardConfig.StopHotkey = this._stopHotkey;
+
+            foreach (var soundButton in _soundButtons)
+            {
+                var sbConfig = new SoundBoardConfig.SoundButtonConfig();
+                sbConfig.Name = soundButton.Name;
+                sbConfig.Volume = soundButton.Volume;
+                sbConfig.Enabled = soundButton.Enabled;
+                sbConfig.Hotkey = soundButton.Hotkey;
+                sbConfig.Path = soundButton.Clip.OriginalPath;
+                
+                soundBoardConfig.SoundButtons.Add(sbConfig);
+            }
+
+            REPOSoundBoard.Instance.Config.SoundBoard = soundBoardConfig;
+            REPOSoundBoard.Instance.Config.SaveToFile();
         }
     }
 }
