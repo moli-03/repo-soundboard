@@ -12,16 +12,17 @@ namespace REPOSoundBoard.Core.Media
     {
         public enum MediaClipState
         {
-            Created,
-            FailedToLoad,
+            Idle,
             Converting,
             Converted,
             FailedToConvert,
             Loading,
-            Loaded
+            Loaded,
+            FailedToLoad
         }
 
         public MediaClipState State;
+        public string StateMessage = string.Empty;
         public string OriginalPath;
         public AudioClip AudioClip;
         
@@ -32,7 +33,8 @@ namespace REPOSoundBoard.Core.Media
         
         public MediaClip(string path)
         {
-            this.State = MediaClipState.Created;
+            this.State = MediaClipState.Idle;
+            this.StateMessage = "Waiting for instructions...";
             this.OriginalPath = path;
             this._cacheFileName = CacheFileHelper.GetCacheFileName(path, ".wav");
             this._cachePath = CacheFileHelper.GetFullCachePath(this._cacheFileName);
@@ -41,8 +43,16 @@ namespace REPOSoundBoard.Core.Media
 
         public IEnumerator Load()
         {
-            if (this.State == MediaClipState.FailedToConvert || this.State == MediaClipState.FailedToLoad)
+            if (this.State == MediaClipState.FailedToConvert || this.State == MediaClipState.FailedToLoad || this.State == MediaClipState.Loaded)
             {
+                yield break;
+            }
+            
+            // Check if the file even exists
+            if (!File.Exists(this.OriginalPath))
+            {
+                this.State = MediaClipState.FailedToLoad;
+                this.StateMessage = "Failed to load. Could not find file.";
                 yield break;
             }
             
@@ -59,6 +69,7 @@ namespace REPOSoundBoard.Core.Media
             }
             
             this.State = MediaClipState.Loading;
+            this.StateMessage = "Loading clip...";
             
             using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(this._cachePath, AudioType.WAV))
             {
@@ -68,11 +79,13 @@ namespace REPOSoundBoard.Core.Media
                 {
                     this.AudioClip = DownloadHandlerAudioClip.GetContent(www);
                     this.State = MediaClipState.Loaded;
+                    this.StateMessage = "Sound button loaded successfully.";
                 }
                 else
                 {
                     REPOSoundBoard.Logger.LogError("Failed to load media: " + www.error + ". Path: " + this.OriginalPath + ". Cache Path: " + this._cachePath);
                     this.State = MediaClipState.FailedToLoad;
+                    this.StateMessage = "Failed to load. Check logs for more information.";
                 }
             }
         }
@@ -85,6 +98,7 @@ namespace REPOSoundBoard.Core.Media
             if (converter == null)
             {
                 this.State = MediaClipState.FailedToConvert;
+                this.StateMessage = "Failed to convert to .wav. Invalid file format.";
                 REPOSoundBoard.Logger.LogWarning($"Unsupported file format: {this.OriginalPath}");
                 yield break;
             }
@@ -96,20 +110,21 @@ namespace REPOSoundBoard.Core.Media
             {
                 converter.Convert(this.OriginalPath, this._cachePath, ConversionOptions.Default);
                 this.State = MediaClipState.Converted;
+                this.StateMessage = "Successfully converted to .wav. Waiting to load...";
                 
                 this._isConverted = true;
             }
             catch (AudioConversionException ex)
             {
                 this.State = MediaClipState.FailedToConvert;
-                REPOSoundBoard.Logger.LogError(
-                    $"Failed to convert to .wav. Error {ex.Message}. File: {this.OriginalPath}");
+                this.StateMessage = ex.Message;
+                REPOSoundBoard.Logger.LogError($"Failed to convert to .wav. Error {ex.Message}. File: {this.OriginalPath}");
             }
             catch (Exception ex)
             {
                 this.State = MediaClipState.FailedToConvert;
-                REPOSoundBoard.Logger.LogError(
-                    $"Failed to convert to .wav. Error {ex.Message}. File: {this.OriginalPath}");
+                this.StateMessage = $"Failed to convert to .wav. Check logs for more information.";
+                REPOSoundBoard.Logger.LogError($"Failed to convert to .wav. Error {ex.Message}. File: {this.OriginalPath}");
             }
         }
     }

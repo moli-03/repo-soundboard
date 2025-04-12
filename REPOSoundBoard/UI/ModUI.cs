@@ -24,6 +24,9 @@ namespace REPOSoundBoard.UI
         private const float CHANGE_BUTTON_WIDTH = 60;
         private const float APPLY_BUTTON_WIDTH = 60;
         private const float RESET_BUTTON_WIDTH = 60;
+        private const float ADD_BUTTON_WIDTH = 60;
+        private const float DELETE_BUTTON_WIDTH = 60;
+        private const float CLOSE_BUTTON_WIDTH = 60;
 
         // Label widths
         private const float NAME_LABEL_WIDTH = 80;
@@ -89,20 +92,38 @@ namespace REPOSoundBoard.UI
             }
 
             Cursor.lockState = CursorLockMode.None;
-            int windowWidth = 600;
-            int windowHeight = 450;
+            
+            int windowWidth = 800;
+            int windowHeight = 500;
             int windowX = (Screen.width - windowWidth) / 2;
             int windowY = (Screen.height - windowHeight) / 2;
 
             // Create a window
             GUI.Box(new Rect(windowX, windowY, windowWidth, windowHeight), "SoundBoard Settings");
 
-            // Search field
-            GUI.Label(new Rect(windowX + 10, windowY + 30, 60, 20), "Search:");
-            _searchFilter = GUI.TextField(new Rect(windowX + 75, windowY + 30, windowWidth - 95, 20), _searchFilter);
+			// Search field
+			GUI.Label(new Rect(windowX + 10, windowY + 30, 60, 20), "Search:");
+			float searchWidth = windowWidth - 95 - ADD_BUTTON_WIDTH;
+			_searchFilter = GUI.TextField(new Rect(windowX + 75, windowY + 30, searchWidth, 20), _searchFilter);
+
+			if (GUI.Button(new Rect(windowX + windowWidth - ADD_BUTTON_WIDTH - 10, windowY + 30, ADD_BUTTON_WIDTH, 20), "Add"))
+            {
+                SoundBoard.Instance.SoundButtons.Insert(0, new SoundButton());
+            }
+
+            // Enable/Disable toggle
+            bool enabled = GUI.Toggle(
+                new Rect(windowX + 10, windowY + 50, 90, 20),
+                SoundBoard.Instance.Enabled,
+                "SoundBoard enabled"
+            );
+            if (enabled != SoundBoard.Instance.Enabled)
+            {
+                SoundBoard.Instance.Enabled = enabled;
+            }
 
             // Create a scrollable area for sound buttons
-            Rect viewportRect = new Rect(windowX + 10, windowY + 60, windowWidth - 20, windowHeight - 70);
+            Rect viewportRect = new Rect(windowX + 10, windowY + 80, windowWidth - 20, windowHeight - 90);
 
             // Calculate content height based on buttons and their dynamic heights
             float contentHeight = CalculateContentHeight(windowWidth);
@@ -136,6 +157,7 @@ namespace REPOSoundBoard.UI
         {
             float nameHeight = 20;
             float statusHeight = 20;
+            float controlsHeight = 20;  // Combined height for enable/volume controls
             
             // Calculate hotkey height
             float hotkeyContentWidth = width - PADDING_X * 2 - HOTKEY_LABEL_WIDTH - CHANGE_BUTTON_WIDTH;
@@ -145,11 +167,11 @@ namespace REPOSoundBoard.UI
 
             // Calculate path height
             float pathContentWidth = width - PADDING_X * 2 - PATH_LABEL_WIDTH - CHANGE_BUTTON_WIDTH;
-            float pathTextHeight =
-                GUI.skin.label.CalcHeight(new GUIContent(button.Clip.OriginalPath), pathContentWidth);
+            float pathTextHeight = 
+                GUI.skin.label.CalcHeight(new GUIContent(button.Clip?.OriginalPath ?? ""), pathContentWidth);
             float pathHeight = Math.Max(20, pathTextHeight);
 
-            return PADDING_Y * 2 + SOUND_BUTTON_LINE_SPACING * 3 + nameHeight + statusHeight + hotkeyHeight + pathHeight;
+            return PADDING_Y * 2 + SOUND_BUTTON_LINE_SPACING * 4 + nameHeight + statusHeight + hotkeyHeight + pathHeight + controlsHeight;
         }
 
         private void DrawSoundButtons(int windowWidth)
@@ -175,55 +197,75 @@ namespace REPOSoundBoard.UI
                 float buttonBoxY = currentY + PADDING_Y;
                 float offsetY = 0;
 
-                // Sound name label and field
-                GUI.Label(new Rect(buttonBoxX, buttonBoxY + offsetY, NAME_LABEL_WIDTH, 20), "Name:");
-
-                float labelInputWidth = buttonBoxMaxX - buttonBoxX - NAME_LABEL_WIDTH;
-                soundButton.Name = GUI.TextField(
-                    new Rect(buttonBoxX + NAME_LABEL_WIDTH, buttonBoxY + offsetY, labelInputWidth, 20),
-                    soundButton.Name
-                );
-                offsetY += 20 + SOUND_BUTTON_LINE_SPACING;
-                
                 // Status
                 GUI.Label(new Rect(buttonBoxX, buttonBoxY + offsetY, STATUS_LABEL_WIDTH, 20), "Status:");
                 
-                string statusText = "Unknown";
+                string statusText = soundButton.Clip?.StateMessage ?? "No file specified.";
                 GUIStyle statusStyle = new GUIStyle(GUI.skin.label);
 
-                if (soundButton.Clip.State == MediaClip.MediaClipState.Created)
+				if (soundButton.Clip == null) {
+					statusStyle.normal.textColor = Color.gray;
+				}
+                else if (soundButton.Clip.State == MediaClip.MediaClipState.Idle)
                 {
-                    statusText = "Created, waiting to load...";
                     statusStyle.normal.textColor = Color.gray;
                 }
                 else if (soundButton.Clip.State == MediaClip.MediaClipState.Converting)
                 {
-                    statusText = "Converting to .wav...";
                     statusStyle.normal.textColor = new Color(255, 165, 0);
                 }
                 else if (soundButton.Clip.State == MediaClip.MediaClipState.Loading)
                 {
-                    statusText = "Loading...";
                     statusStyle.normal.textColor = new Color(255, 165, 0);
                 }
                 else if (soundButton.Clip.State == MediaClip.MediaClipState.Loaded)
                 {
-                    statusText = "Loaded successfully";
                     statusStyle.normal.textColor = Color.green;
                 }
                 else if (soundButton.Clip.State == MediaClip.MediaClipState.FailedToConvert)
                 {
-                    statusText = "Conversion to .wav failed!";
                     statusStyle.normal.textColor = Color.red;
                 }
                 else if (soundButton.Clip.State == MediaClip.MediaClipState.FailedToLoad)
                 {
-                    statusText = "Loading failed!";
                     statusStyle.normal.textColor = Color.red;
                 }
-                
+
                 float statusWidth = buttonBoxMaxX - buttonBoxX - STATUS_LABEL_WIDTH;
                 GUI.Label(new Rect(buttonBoxX + STATUS_LABEL_WIDTH, buttonBoxY + offsetY, statusWidth, 20), statusText, statusStyle);
+                offsetY += 20 + SOUND_BUTTON_LINE_SPACING;
+
+                // Sound name label and field
+                GUI.Label(new Rect(buttonBoxX, buttonBoxY + offsetY, NAME_LABEL_WIDTH, 20), "Name:");
+
+                float labelInputWidth = buttonBoxMaxX - buttonBoxX - NAME_LABEL_WIDTH - DELETE_BUTTON_WIDTH;
+                soundButton.Name = GUI.TextField(
+                    new Rect(buttonBoxX + NAME_LABEL_WIDTH, buttonBoxY + offsetY, labelInputWidth, 20),
+                    soundButton.Name
+                );
+                if (GUI.Button(new Rect(buttonBoxMaxX - DELETE_BUTTON_WIDTH, buttonBoxY + offsetY, ADD_BUTTON_WIDTH, 20), "Delete"))
+                {
+                    SoundBoard.Instance.SoundButtons.Remove(soundButton);
+                }
+                offsetY += 20 + SOUND_BUTTON_LINE_SPACING;
+
+                // Volume and Enable controls
+                GUI.Label(new Rect(buttonBoxX, buttonBoxY + offsetY, NAME_LABEL_WIDTH, 20), "Volume:");
+                soundButton.Volume = GUI.HorizontalSlider(
+                    new Rect(buttonBoxX + NAME_LABEL_WIDTH, buttonBoxY + offsetY + 4, 150, 20),
+                    soundButton.Volume,
+                    0f,
+                    1f
+                );
+                
+                GUIStyle toggleStyle = new GUIStyle(GUI.skin.toggle);
+                toggleStyle.margin.left = 10;  // Add spacing between checkbox and label
+                soundButton.Enabled = GUI.Toggle(
+                    new Rect(buttonBoxX + NAME_LABEL_WIDTH + 170, buttonBoxY + offsetY, 70, 20),
+                    soundButton.Enabled,
+                    "Enabled",
+                    toggleStyle
+                );
                 offsetY += 20 + SOUND_BUTTON_LINE_SPACING;
 
                 // Hotkey section
@@ -264,11 +306,11 @@ namespace REPOSoundBoard.UI
         {
             // Display set path
             float width = buttonBoxMaxX - buttonBoxX - CHANGE_BUTTON_WIDTH - PATH_LABEL_WIDTH;
-            float height = GUI.skin.label.CalcHeight(new GUIContent(soundButton.Clip.OriginalPath), width);
+            float height = GUI.skin.label.CalcHeight(new GUIContent(soundButton.Clip?.OriginalPath ?? ""), width);
 
             GUI.Label(
                 new Rect(buttonBoxX + PATH_LABEL_WIDTH, buttonBoxY + offsetY, width, height),
-                soundButton.Clip.OriginalPath
+                soundButton.Clip?.OriginalPath ?? "No file specified."
             );
 
             // Change button
@@ -276,7 +318,7 @@ namespace REPOSoundBoard.UI
             if (GUI.Button(new Rect(changeButtonX, buttonBoxY + offsetY, CHANGE_BUTTON_WIDTH, 20), "Change"))
             {
                 _changingPathForButton = soundButton;
-                _tmpSelectedPath = soundButton.Clip.OriginalPath;
+                _tmpSelectedPath = soundButton.Clip?.OriginalPath ?? "";
             }
 
             return Math.Max(height, 20);
@@ -318,11 +360,15 @@ namespace REPOSoundBoard.UI
         {
             // Display current hotkey
             float width = buttonBoxMaxX - buttonBoxX - HOTKEY_LABEL_WIDTH - CHANGE_BUTTON_WIDTH;
-            float height = GUI.skin.label.CalcHeight(new GUIContent(soundButton.Hotkey.ConcatKeys()), width);
+			string keys = soundButton.Hotkey.ConcatKeys().Length > 0 ? soundButton.Hotkey.ConcatKeys() : "No hotkey set.";
+			GUIStyle hotkeyStyle = new GUIStyle(GUI.skin.label);
+			hotkeyStyle.normal.textColor = soundButton.Hotkey.ConcatKeys().Length > 0 ? Color.white : Color.gray;
+            float height = GUI.skin.label.CalcHeight(new GUIContent(keys), width);
 
             GUI.Label(
                 new Rect(buttonBoxX + HOTKEY_LABEL_WIDTH, buttonBoxY + offsetY, width, height),
-                soundButton.Hotkey.ConcatKeys()
+				keys,
+				hotkeyStyle
             );
 
             // Change button

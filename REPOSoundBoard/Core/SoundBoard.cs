@@ -15,6 +15,12 @@ namespace REPOSoundBoard.Core
         
         public List<SoundButton> SoundButtons { get; } = new List<SoundButton>();
 
+        public bool Enabled
+        {
+            get => _enabled;
+            set => _enabled = value;
+        }
+
         private Recorder _recorder;
         private AudioSource _audioSource;
         private Hotkey _stopHotkey;
@@ -84,14 +90,14 @@ namespace REPOSoundBoard.Core
             this._audioSource = source;
         }
 
-        private IEnumerator Play(SoundButton soundButton)
+        public IEnumerator Play(SoundButton soundButton, bool localOnly = false)
         {
-            if (!this._enabled || !soundButton.Enabled)
+            if (!this._enabled || !soundButton.Enabled || soundButton.Clip == null || soundButton.Clip.State != MediaClip.MediaClipState.Loaded)
             {
                 yield break;
             }
             
-            if (this._recorder == null || this._audioSource == null || soundButton.Clip.State != MediaClip.MediaClipState.Loaded) {
+            if (this._recorder == null || this._audioSource == null) {
 				yield break;
 			}
 
@@ -103,10 +109,13 @@ namespace REPOSoundBoard.Core
 			this._isPlaying = true;
 			this._currentSoundButton = soundButton;
 
-			this._recorder.TransmitEnabled = false;
-			this._recorder.SourceType = Recorder.InputSourceType.AudioClip;
-			this._recorder.AudioClip = soundButton.Clip.AudioClip;
-			this._recorder.TransmitEnabled = true;
+            if (!localOnly)
+            {
+                this._recorder.TransmitEnabled = false;
+                this._recorder.SourceType = Recorder.InputSourceType.AudioClip;
+                this._recorder.AudioClip = soundButton.Clip.AudioClip;
+                this._recorder.TransmitEnabled = true;
+            }
 
 			// Also play locally through AudioSource
 			this._audioSource.clip = soundButton.Clip.AudioClip;
