@@ -4,14 +4,16 @@ using System.Collections.Generic;
 using Photon.Voice.Unity;
 using REPOSoundBoard.Config;
 using REPOSoundBoard.Core.Media;
-using REPOSoundBoard.Hotkeys;
+using REPOSoundBoard.Core.Hotkeys;
 using UnityEngine;
 
 namespace REPOSoundBoard.Core
 {
     public class SoundBoard : MonoBehaviour
     {
-        private List<SoundButton> _soundButtons = new List<SoundButton>();
+        public static SoundBoard Instance;
+        
+        public List<SoundButton> SoundButtons { get; } = new List<SoundButton>();
 
         private Recorder _recorder;
         private AudioSource _audioSource;
@@ -20,6 +22,14 @@ namespace REPOSoundBoard.Core
         private bool _enabled;
         private SoundButton _currentSoundButton;
         private Coroutine _playCoroutine;
+
+        private void Start()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+        }
 
         public void LoadConfig(SoundBoardConfig config)
         {
@@ -52,12 +62,12 @@ namespace REPOSoundBoard.Core
 			});
 
             REPOSoundBoard.Instance.HotkeyManager.RegisterHotkey(soundButton.Hotkey);
-            this._soundButtons.Add(soundButton);
+            this.SoundButtons.Add(soundButton);
         }
 
         public void RemoveSoundButton(SoundButton soundButton)
         {
-            this._soundButtons.Remove(soundButton);
+            this.SoundButtons.Remove(soundButton);
             REPOSoundBoard.Instance.HotkeyManager.UnregisterHotkey(soundButton.Hotkey);
         }
 
@@ -141,7 +151,7 @@ namespace REPOSoundBoard.Core
             soundBoardConfig.Enabled = this._enabled;
             soundBoardConfig.StopHotkey = this._stopHotkey;
 
-            foreach (var soundButton in _soundButtons)
+            foreach (var soundButton in SoundButtons)
             {
                 soundBoardConfig.SoundButtons.Add(soundButton.CreateConfig());
             }

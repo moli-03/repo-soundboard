@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using UnityEngine;
 
-namespace REPOSoundBoard.Hotkeys
+namespace REPOSoundBoard.Core.Hotkeys
 {
     
     public class Hotkey
@@ -48,6 +48,11 @@ namespace REPOSoundBoard.Hotkeys
             }
             
             this.Callback.Invoke();
+        }
+
+        public string ConcatKeys()
+        {
+            return string.Join(" + ", this.Keys);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using REPOSoundBoard.Config;
 using REPOSoundBoard.Core.Media;
-using REPOSoundBoard.Hotkeys;
+using REPOSoundBoard.Core.Hotkeys;
 
 namespace REPOSoundBoard.Core
 {
@@ -16,7 +16,7 @@ namespace REPOSoundBoard.Core
         public static SoundButton FromConfig(SoundButtonConfig config)
         {
             var sb = new SoundButton();
-            sb.Name = config.Name;
+            sb.Name = config.Name ?? "";
             sb.Enabled = config.Enabled;
             sb.Volume = config.Volume;
             sb.Hotkey = config.Hotkey;

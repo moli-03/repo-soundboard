@@ -15,7 +15,9 @@ namespace REPOSoundBoard.Core.Media
             Created,
             FailedToLoad,
             Converting,
+            Converted,
             FailedToConvert,
+            Loading,
             Loaded
         }
 
@@ -56,6 +58,8 @@ namespace REPOSoundBoard.Core.Media
                 }
             }
             
+            this.State = MediaClipState.Loading;
+            
             using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(this._cachePath, AudioType.WAV))
             {
                 yield return www.SendWebRequest();
@@ -75,6 +79,7 @@ namespace REPOSoundBoard.Core.Media
 
         public IEnumerator Convert()
         {
+            this.State = MediaClipState.Converting;
             var converter = MediaConverterFactory.GetConverterForFile(this.OriginalPath);
 
             if (converter == null)
@@ -89,8 +94,8 @@ namespace REPOSoundBoard.Core.Media
             
             try
             {
-                this.State = MediaClipState.Converting;
                 converter.Convert(this.OriginalPath, this._cachePath, ConversionOptions.Default);
+                this.State = MediaClipState.Converted;
                 
                 this._isConverted = true;
             }

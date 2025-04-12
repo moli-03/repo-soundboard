@@ -3,7 +3,8 @@ using BepInEx.Logging;
 using HarmonyLib;
 using REPOSoundBoard.Core;
 using REPOSoundBoard.Config;
-using REPOSoundBoard.Hotkeys;
+using REPOSoundBoard.Core.Hotkeys;
+using REPOSoundBoard.UI;
 using UnityEngine;
 
 namespace REPOSoundBoard
@@ -23,6 +24,7 @@ namespace REPOSoundBoard
 
         public HotkeyManager HotkeyManager;
         public SoundBoard SoundBoard;
+        public ModUI UI;
         
         private void Awake()
         {
@@ -43,6 +45,8 @@ namespace REPOSoundBoard
             
             this.SoundBoard = go.AddComponent<SoundBoard>();
             this.SoundBoard.LoadConfig(Config.SoundBoard);
+            
+            this.UI = go.AddComponent<ModUI>();
             
             // Register patches
             _harmony.PatchAll(typeof(Patches.PlayerVoiceChatPatch));

@@ -1,4 +1,4 @@
-﻿using REPOSoundBoard.Hotkeys;
+﻿using REPOSoundBoard.Core.Hotkeys;
 
 namespace REPOSoundBoard.Config
 {

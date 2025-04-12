@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
-namespace REPOSoundBoard.Hotkeys
+namespace REPOSoundBoard.Core.Hotkeys
 {
     public class HotkeyManager : MonoBehaviour
     {

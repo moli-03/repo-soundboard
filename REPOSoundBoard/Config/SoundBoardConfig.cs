@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using REPOSoundBoard.Hotkeys;
+using REPOSoundBoard.Core.Hotkeys;
 using UnityEngine;
 
 namespace REPOSoundBoard.Config
