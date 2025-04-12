@@ -18,6 +18,12 @@ namespace REPOSoundBoard.Core.Media.Converter
 
         public void Convert(string sourcePath, string targetPath, ConversionOptions options)
         {
+            
+            if (!File.Exists(sourcePath))
+            {
+                throw new FileNotFoundException($"Source file {sourcePath} not found");
+            }
+            
             using (var reader = new AudioFileReader(sourcePath))
             {
                 // Create a resampler if needed

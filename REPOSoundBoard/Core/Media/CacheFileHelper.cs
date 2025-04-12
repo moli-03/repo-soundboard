@@ -8,16 +8,21 @@ namespace REPOSoundBoard.Core.Media
 {
     public static class CacheFileHelper
     {
-        public static readonly string CacheDirectory = Path.Combine(Paths.PluginPath, $"Moli-REPOSoundBoard-{REPOSoundBoard.VERSION}/_cache");
+        private static readonly string CacheDirectory = Path.Combine(Paths.PluginPath, $"Moli-REPOSoundBoard-{REPOSoundBoard.VERSION}/_cache");
 
-        public static bool ExistsInCache(string originalFilePath)
+        public static string GetFullCachePath(string cacheFileName)
         {
-            return File.Exists(GetCacheFilePath(originalFilePath));
+            return Path.Combine(CacheDirectory, cacheFileName);
         }
 
-        public static string GetCacheFilePath(string originalFilePath)
+        public static bool ExistsInCache(string cacheFileName)
         {
-            return Path.Combine(CacheDirectory, GetCacheFileName(originalFilePath));
+            return File.Exists(GetFullCachePath(cacheFileName));
+        }
+
+        public static string GetCacheFilePath(string originalFilePath, string cacheExtension = ".cache")
+        {
+            return Path.Combine(CacheDirectory, GetCacheFileName(originalFilePath, cacheExtension));
         }
 
         public static void EnsureCacheDirectoryExists()

@@ -37,13 +37,17 @@ namespace REPOSoundBoard.Core.Media.Converter
                 throw new AudioConversionException("Failed to convert video file. ffmpeg not installed.");
             }
             
+            if (!File.Exists(sourcePath))
+            {
+                throw new FileNotFoundException($"Source file {sourcePath} not found");
+            }
+            
             RunFfmpegProcess(sourcePath, targetPath, options);
         }
         
         private void RunFfmpegProcess(string sourcePath, string targetPath, ConversionOptions options)
         {
             string arguments = BuildFfmpegArguments(sourcePath, targetPath, options);
-            REPOSoundBoard.Logger.LogInfo($"Running FFmpeg with arguments: {arguments}");
     
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
@@ -63,7 +67,6 @@ namespace REPOSoundBoard.Core.Media.Converter
                     if (!string.IsNullOrEmpty(e.Data))
                     {
                         errorOutput.AppendLine(e.Data);
-                        REPOSoundBoard.Logger.LogError($"FFmpeg: {e.Data}");
                     }
                 };
     
@@ -80,7 +83,7 @@ namespace REPOSoundBoard.Core.Media.Converter
                     try { process.Kill(); } catch { /* Ignore errors on kill */ }
                     throw new AudioConversionException("FFmpeg process timed out");
                 }
-    
+                
                 if (process.ExitCode != 0)
                 {
                     string errorMessage = errorOutput.ToString();

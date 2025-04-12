@@ -15,6 +15,11 @@
                 return new Mp3Converter();
             }
 
+            if (AiffConverter.IsCompatible(path))
+            {
+                return new AiffConverter();
+            }
+
             if (VideoConverter.IsCompatible(path))
             {
                 return new VideoConverter();

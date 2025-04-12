@@ -3,8 +3,9 @@ using NAudio.Wave;
 
 namespace REPOSoundBoard.Core.Media.Converter
 {
-    public class Mp3Converter : IMediaConverter
+    public class AiffConverter : IMediaConverter
     {
+        
         public static bool IsCompatible(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -13,7 +14,7 @@ namespace REPOSoundBoard.Core.Media.Converter
             }
 
             string extension = Path.GetExtension(path)?.ToLowerInvariant();
-            return !string.IsNullOrEmpty(extension) && extension == ".mp3";
+            return !string.IsNullOrEmpty(extension) && extension == ".aiff";
         }
 
         public void Convert(string sourcePath, string targetPath, ConversionOptions options)
@@ -23,7 +24,7 @@ namespace REPOSoundBoard.Core.Media.Converter
                 throw new FileNotFoundException($"Source file {sourcePath} not found");
             }
             
-            using (var reader = new AudioFileReader(sourcePath))
+            using (var reader = new AiffFileReader(sourcePath))
             {
                 // Create a resampler if needed
                 var resampler = new MediaFoundationResampler(reader, new WaveFormat(options.SampleRate, options.BitsPerSample, options.ChannelCount));

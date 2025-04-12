@@ -24,6 +24,7 @@ namespace REPOSoundBoard.Core.Media
         public AudioClip AudioClip;
         
         private readonly string _cachePath;
+        private readonly string _cacheFileName;
         private bool _isConverted;
         
         
@@ -31,8 +32,9 @@ namespace REPOSoundBoard.Core.Media
         {
             this.State = MediaClipState.Created;
             this.OriginalPath = path;
-            this._cachePath = CacheFileHelper.GetCacheFilePath(path);
-            this._isConverted = CacheFileHelper.ExistsInCache(this.OriginalPath);
+            this._cacheFileName = CacheFileHelper.GetCacheFileName(path, ".wav");
+            this._cachePath = CacheFileHelper.GetFullCachePath(this._cacheFileName);
+            this._isConverted = CacheFileHelper.ExistsInCache(this._cacheFileName);
         }
 
         public IEnumerator Load()
@@ -46,14 +48,13 @@ namespace REPOSoundBoard.Core.Media
             if (!this._isConverted)
             {
                 yield return this.Convert();
-
+                
                 // If that failed we give up :)
                 if (!this._isConverted)
                 {
                     yield break;
                 }
             }
-            
             
             using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(this._cachePath, AudioType.WAV))
             {
@@ -83,13 +84,14 @@ namespace REPOSoundBoard.Core.Media
                 yield break;
             }
 
+            // Make sure the cache dir exists
+            CacheFileHelper.EnsureCacheDirectoryExists();
+            
             try
             {
                 this.State = MediaClipState.Converting;
-                CacheFileHelper.EnsureCacheDirectoryExists();
                 converter.Convert(this.OriginalPath, this._cachePath, ConversionOptions.Default);
                 
-                REPOSoundBoard.Logger.LogInfo($"Converted and cached {this.OriginalPath} to {this._cachePath}");
                 this._isConverted = true;
             }
             catch (AudioConversionException ex)

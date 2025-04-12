@@ -38,12 +38,10 @@ namespace REPOSoundBoard.Core
                 {
                     continue;
                 }
-
-                var mediaClip = new MediaClip(configSoundButton.Path);
-                this.StartCoroutine(mediaClip.Load());
-                var soundButton = new SoundButton(configSoundButton.Name, configSoundButton.Volume, configSoundButton.Hotkey, mediaClip);
-
-                this.AddSoundButton(soundButton);
+                
+                var sb = SoundButton.FromConfig(configSoundButton);
+                this.StartCoroutine(sb.LoadClip());
+                this.AddSoundButton(sb);
             }
         }
 
@@ -145,14 +143,7 @@ namespace REPOSoundBoard.Core
 
             foreach (var soundButton in _soundButtons)
             {
-                var sbConfig = new SoundBoardConfig.SoundButtonConfig();
-                sbConfig.Name = soundButton.Name;
-                sbConfig.Volume = soundButton.Volume;
-                sbConfig.Enabled = soundButton.Enabled;
-                sbConfig.Hotkey = soundButton.Hotkey;
-                sbConfig.Path = soundButton.Clip.OriginalPath;
-                
-                soundBoardConfig.SoundButtons.Add(sbConfig);
+                soundBoardConfig.SoundButtons.Add(soundButton.CreateConfig());
             }
 
             REPOSoundBoard.Instance.Config.SoundBoard = soundBoardConfig;
