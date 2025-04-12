@@ -50,6 +50,7 @@ namespace REPOSoundBoard
             
             // Register patches
             _harmony.PatchAll(typeof(Patches.PlayerVoiceChatPatch));
+            _harmony.PatchAll(typeof(Patches.MenuCursorPatch));
         }
     }
 }

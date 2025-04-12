@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using REPOSoundBoard.Core;
 using REPOSoundBoard.Core.Media;
+using REPOSoundBoard.Patches;
 using UnityEngine;
 
 namespace REPOSoundBoard.UI
@@ -86,12 +87,15 @@ namespace REPOSoundBoard.UI
 
         private void OnGUI()
         {
+            MenuCursorPatch.HideInGameCursor = _isOpen;
+            
             if (!_isOpen)
             {
                 return;
             }
 
             Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             
             int windowWidth = 800;
             int windowHeight = 500;
