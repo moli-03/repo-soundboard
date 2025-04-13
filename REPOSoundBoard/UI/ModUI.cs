@@ -61,6 +61,8 @@ namespace REPOSoundBoard.UI
 			KeyCode.RightApple
         };
 
+        private SoundButton _buttonToDelete = null;
+
         private void Start()
         {
             if (Instance == null)
@@ -313,7 +315,7 @@ namespace REPOSoundBoard.UI
                 // Delete button (moved from name section)
                 if (GUI.Button(new Rect(buttonBoxMaxX - DELETE_BUTTON_WIDTH, buttonBoxY + offsetY, DELETE_BUTTON_WIDTH, 20), "Delete"))
                 {
-                    SoundBoard.Instance.SoundButtons.Remove(soundButton);
+                    _buttonToDelete = soundButton;
                 }
                 offsetY += 20 + SOUND_BUTTON_LINE_SPACING;
 
@@ -376,6 +378,13 @@ namespace REPOSoundBoard.UI
                 }
 
                 currentY += buttonHeight + SOUND_BUTTON_SPACING;
+            }
+
+            // Handle deletion after the loop
+            if (_buttonToDelete != null)
+            {
+                SoundBoard.Instance.SoundButtons.Remove(_buttonToDelete);
+                _buttonToDelete = null;
             }
         }
 
