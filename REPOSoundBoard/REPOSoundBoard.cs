@@ -24,7 +24,7 @@ namespace REPOSoundBoard
 
         public HotkeyManager HotkeyManager;
         public SoundBoard SoundBoard;
-        public ModUI UI;
+        public SoundBoardUI UI;
         
         private void Awake()
         {
@@ -46,7 +46,7 @@ namespace REPOSoundBoard
             this.SoundBoard = go.AddComponent<SoundBoard>();
             this.SoundBoard.LoadConfig(Config.SoundBoard);
             
-            this.UI = go.AddComponent<ModUI>();
+            this.UI = go.AddComponent<SoundBoardUI>();
             
             // Register patches
             _harmony.PatchAll(typeof(Patches.PlayerVoiceChatPatch));
