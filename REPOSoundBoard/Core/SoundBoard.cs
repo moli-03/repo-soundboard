@@ -14,6 +14,7 @@ namespace REPOSoundBoard.Core
         public static SoundBoard Instance;
         
         public List<SoundButton> SoundButtons { get; } = new List<SoundButton>();
+        public Hotkey StopHotkey;
 
         public bool Enabled
         {
@@ -23,7 +24,6 @@ namespace REPOSoundBoard.Core
 
         private Recorder _recorder;
         private AudioSource _audioSource;
-        private Hotkey _stopHotkey;
         private bool _isPlaying;
         private bool _enabled;
         private SoundButton _currentSoundButton;
@@ -35,6 +35,8 @@ namespace REPOSoundBoard.Core
             {
                 Instance = this;
             }
+            
+            this._audioSource = this.gameObject.AddComponent<AudioSource>();
         }
 
         public void LoadConfig(SoundBoardConfig config)
@@ -43,8 +45,8 @@ namespace REPOSoundBoard.Core
             this._enabled = config.Enabled;
             
             // Stop hotkey
-            this._stopHotkey = config.StopHotkey;
-            this._stopHotkey.OnPressed(this.StopCurrent);
+            this.StopHotkey = config.StopHotkey;
+            this.StopHotkey.OnPressed(this.StopCurrent);
             REPOSoundBoard.Instance.HotkeyManager.RegisterHotkey(config.StopHotkey);
 
             // Sound buttons
@@ -63,9 +65,7 @@ namespace REPOSoundBoard.Core
 
         public void AddSoundButton(SoundButton soundButton)
         {
-            soundButton.Hotkey.OnPressed(() => { 
-				this._playCoroutine = this.StartCoroutine(this.Play(soundButton));
-			});
+            soundButton.Hotkey.OnPressed(() => this.Play(soundButton));
 
             REPOSoundBoard.Instance.HotkeyManager.RegisterHotkey(soundButton.Hotkey);
             this.SoundButtons.Add(soundButton);
@@ -84,21 +84,37 @@ namespace REPOSoundBoard.Core
             this._recorder = recorder;
         }
 
-        public void ChangeAudioSource(AudioSource source)
-        {
-            this.StopCurrent();
-            this._audioSource = source;
-        }
 
-        public IEnumerator Play(SoundButton soundButton, bool localOnly = false)
+		public void StartLocalPlayback(SoundButton soundButton, bool startStopCoroutine = true) {
+
+			if (soundButton.Clip == null || soundButton.Clip.State != MediaClip.MediaClipState.Loaded) {
+				return;
+			}
+
+			this.StopCurrent();
+
+			this._isPlaying = true;
+			this._currentSoundButton = soundButton;
+			this._audioSource.clip = soundButton.Clip.AudioClip;
+			this._audioSource.volume = soundButton.Volume;
+			this._audioSource.Play();
+
+			if (startStopCoroutine) {
+				this._playCoroutine = this.StartCoroutine(this.StopAfterEnd(soundButton));
+			}
+		}
+
+
+        private void Play(SoundButton soundButton)
         {
             if (!this._enabled || !soundButton.Enabled || soundButton.Clip == null || soundButton.Clip.State != MediaClip.MediaClipState.Loaded)
             {
-                yield break;
+				return;
             }
             
-            if (this._recorder == null || this._audioSource == null) {
-				yield break;
+            if (this._recorder == null || this._audioSource == null)
+			{
+				return;
 			}
 
 			if (this._isPlaying)
@@ -109,45 +125,49 @@ namespace REPOSoundBoard.Core
 			this._isPlaying = true;
 			this._currentSoundButton = soundButton;
 
-            if (!localOnly)
-            {
-                this._recorder.TransmitEnabled = false;
-                this._recorder.SourceType = Recorder.InputSourceType.AudioClip;
-                this._recorder.AudioClip = soundButton.Clip.AudioClip;
-                this._recorder.TransmitEnabled = true;
-            }
+			this._recorder.TransmitEnabled = false;
+			this._recorder.SourceType = Recorder.InputSourceType.AudioClip;
+			this._recorder.AudioClip = soundButton.Clip.AudioClip;
+			this._recorder.TransmitEnabled = true;
 
 			// Also play locally through AudioSource
-			this._audioSource.clip = soundButton.Clip.AudioClip;
-			this._audioSource.volume = soundButton.Volume;
-			this._audioSource.Play();
+			this.StartLocalPlayback(soundButton, false);
+
+			this._playCoroutine = this.StartCoroutine(this.StopAfterEnd(soundButton));
+        }
+
+		private IEnumerator StopAfterEnd(SoundButton soundButton) {
+
+			if (soundButton.Clip == null) {
+				yield break;
+			}
 
 			yield return new WaitForSeconds(soundButton.Clip.AudioClip.length);
 
 			this.StopCurrent();
-        }
+		}
 
         private void StopCurrent()
         {
-            if (this._recorder == null || !this._isPlaying)
-            {
-                return;
-            }
+	        if (!this._isPlaying)
+	        {
+		        return;
+	        }
 
-            if (this._playCoroutine != null)
+	        if (this._playCoroutine != null)
             {
                 this.StopCoroutine(this._playCoroutine);
                 this._playCoroutine = null;
             }
+	        
+			_audioSource.Stop();
 
-            this._recorder.SourceType = Recorder.InputSourceType.Microphone;
-            this._recorder.AudioClip = null;
-            this._recorder.TransmitEnabled = true;
-
-            if (_audioSource != null)
-            {
-                _audioSource.Stop();
-            }
+			if (this._recorder != null)
+			{
+				this._recorder.SourceType = Recorder.InputSourceType.Microphone;
+				this._recorder.AudioClip = null;
+				this._recorder.TransmitEnabled = true;
+			}
 
             this._isPlaying = false;
             this._currentSoundButton = null;
@@ -158,7 +178,7 @@ namespace REPOSoundBoard.Core
             // Update the config
             var soundBoardConfig = new SoundBoardConfig();
             soundBoardConfig.Enabled = this._enabled;
-            soundBoardConfig.StopHotkey = this._stopHotkey;
+            soundBoardConfig.StopHotkey = this.StopHotkey;
 
             foreach (var soundButton in SoundButtons)
             {

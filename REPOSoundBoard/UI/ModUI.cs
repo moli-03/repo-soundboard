@@ -25,7 +25,8 @@ namespace REPOSoundBoard.UI
         private const float CHANGE_BUTTON_WIDTH = 60;
         private const float APPLY_BUTTON_WIDTH = 60;
         private const float RESET_BUTTON_WIDTH = 60;
-        private const float ADD_BUTTON_WIDTH = 60;
+        private const float ADD_BUTTON_WIDTH = 120;
+        private const float TEST_BUTTON_WIDTH = 60;
         private const float DELETE_BUTTON_WIDTH = 60;
         private const float CLOSE_BUTTON_WIDTH = 60;
 
@@ -41,6 +42,10 @@ namespace REPOSoundBoard.UI
         private List<KeyCode> _currentlyBindingKeys = new List<KeyCode>();
         private List<KeyCode> _possibleKeys;
 
+        // Stop hotkey binding state
+        private bool _isBindingStopHotkey = false;
+        private List<KeyCode> _currentlyBindingStopKeys = new List<KeyCode>();
+
         // Path selection state
         private string _tmpSelectedPath = null;
         private SoundButton _changingPathForButton = null;
@@ -50,6 +55,10 @@ namespace REPOSoundBoard.UI
         {
             KeyCode.Mouse0, // LMB
             KeyCode.Mouse1, // RMB
+			KeyCode.LeftWindows,
+			KeyCode.RightWindows,
+			KeyCode.LeftApple,
+			KeyCode.RightApple
         };
 
         private void Start()
@@ -65,7 +74,7 @@ namespace REPOSoundBoard.UI
 
         private void Update()
         {
-            if (!_isListeningForInput)
+            if (!_isListeningForInput && !_isBindingStopHotkey)
             {
                 return;
             }
@@ -75,12 +84,27 @@ namespace REPOSoundBoard.UI
 
         private void DetectKeyPresses()
         {
-            _currentlyBindingKeys.Clear();
-            foreach (var key in _possibleKeys)
+            if (_isListeningForInput)
             {
-                if (Input.GetKey(key))
+                _currentlyBindingKeys.Clear();
+                foreach (var key in _possibleKeys)
                 {
-                    _currentlyBindingKeys.Add(key);
+                    if (Input.GetKey(key))
+                    {
+                        _currentlyBindingKeys.Add(key);
+                    }
+                }
+            }
+            
+            if (_isBindingStopHotkey)
+            {
+                _currentlyBindingStopKeys.Clear();
+                foreach (var key in _possibleKeys)
+                {
+                    if (Input.GetKey(key))
+                    {
+                        _currentlyBindingStopKeys.Add(key);
+                    }
                 }
             }
         }
@@ -105,19 +129,9 @@ namespace REPOSoundBoard.UI
             // Create a window
             GUI.Box(new Rect(windowX, windowY, windowWidth, windowHeight), "SoundBoard Settings");
 
-			// Search field
-			GUI.Label(new Rect(windowX + 10, windowY + 30, 60, 20), "Search:");
-			float searchWidth = windowWidth - 95 - ADD_BUTTON_WIDTH;
-			_searchFilter = GUI.TextField(new Rect(windowX + 75, windowY + 30, searchWidth, 20), _searchFilter);
-
-			if (GUI.Button(new Rect(windowX + windowWidth - ADD_BUTTON_WIDTH - 10, windowY + 30, ADD_BUTTON_WIDTH, 20), "Add"))
-            {
-                SoundBoard.Instance.SoundButtons.Insert(0, new SoundButton());
-            }
-
             // Enable/Disable toggle
             bool enabled = GUI.Toggle(
-                new Rect(windowX + 10, windowY + 50, 90, 20),
+                new Rect(windowX + windowWidth - 150, windowY + 30, 150, 20),
                 SoundBoard.Instance.Enabled,
                 "SoundBoard enabled"
             );
@@ -126,6 +140,58 @@ namespace REPOSoundBoard.UI
                 SoundBoard.Instance.Enabled = enabled;
             }
 
+            // Stop Hotkey section
+            GUI.Label(new Rect(windowX + 10, windowY + 30, HOTKEY_LABEL_WIDTH, 20), "Stop Key:");
+            
+            if (!_isBindingStopHotkey)
+            {
+                string stopKeys = SoundBoard.Instance.StopHotkey.ConcatKeys().Length > 0 
+                    ? SoundBoard.Instance.StopHotkey.ConcatKeys() 
+                    : "No hotkey set.";
+                GUIStyle stopHotkeyStyle = new GUIStyle(GUI.skin.label);
+                stopHotkeyStyle.normal.textColor = SoundBoard.Instance.StopHotkey.ConcatKeys().Length > 0 ? Color.white : Color.gray;
+                
+                GUI.Label(
+                    new Rect(windowX + 10 + HOTKEY_LABEL_WIDTH, windowY + 30, 200, 20),
+                    stopKeys,
+                    stopHotkeyStyle
+                );
+
+                if (GUI.Button(new Rect(windowX + 10 + HOTKEY_LABEL_WIDTH + 210, windowY + 30, CHANGE_BUTTON_WIDTH, 20), "Change"))
+                {
+                    _isBindingStopHotkey = true;
+                    _currentlyBindingStopKeys.Clear();
+                }
+            }
+            else
+            {
+                string keys = string.Join(" + ", _currentlyBindingStopKeys);
+                GUI.Label(new Rect(windowX + 10 + HOTKEY_LABEL_WIDTH, windowY + 30, 200, 20), keys);
+
+                if (GUI.Button(new Rect(windowX + 10 + HOTKEY_LABEL_WIDTH + 210, windowY + 30, APPLY_BUTTON_WIDTH, 20), "Apply"))
+                {
+                    SoundBoard.Instance.StopHotkey.Keys = new List<KeyCode>(_currentlyBindingStopKeys);
+                    _isBindingStopHotkey = false;
+                    _currentlyBindingStopKeys.Clear();
+                }
+
+                if (GUI.Button(new Rect(windowX + 10 + HOTKEY_LABEL_WIDTH + 210 + APPLY_BUTTON_WIDTH, windowY + 30, RESET_BUTTON_WIDTH, 20), "Reset"))
+                {
+                    _isBindingStopHotkey = false;
+                    _currentlyBindingStopKeys.Clear();
+                }
+            }
+            
+			// Search field
+			GUI.Label(new Rect(windowX + 10, windowY + 55, 60, 20), "Search:");
+			float searchWidth = windowWidth - 95 - ADD_BUTTON_WIDTH;
+			_searchFilter = GUI.TextField(new Rect(windowX + 75, windowY + 55, searchWidth, 20), _searchFilter);
+
+			if (GUI.Button(new Rect(windowX + windowWidth - ADD_BUTTON_WIDTH - 10, windowY + 55, ADD_BUTTON_WIDTH, 20), "Add SoundButton"))
+            {
+                SoundBoard.Instance.SoundButtons.Insert(0, new SoundButton());
+            }
+            
             // Create a scrollable area for sound buttons
             Rect viewportRect = new Rect(windowX + 10, windowY + 80, windowWidth - 20, windowHeight - 90);
 
@@ -235,22 +301,30 @@ namespace REPOSoundBoard.UI
                     statusStyle.normal.textColor = Color.red;
                 }
 
-                float statusWidth = buttonBoxMaxX - buttonBoxX - STATUS_LABEL_WIDTH;
+                float statusWidth = buttonBoxMaxX - buttonBoxX - STATUS_LABEL_WIDTH - TEST_BUTTON_WIDTH - DELETE_BUTTON_WIDTH - 10;
                 GUI.Label(new Rect(buttonBoxX + STATUS_LABEL_WIDTH, buttonBoxY + offsetY, statusWidth, 20), statusText, statusStyle);
+
+                // Test button
+                if (GUI.Button(new Rect(buttonBoxMaxX - DELETE_BUTTON_WIDTH - TEST_BUTTON_WIDTH - 5, buttonBoxY + offsetY, TEST_BUTTON_WIDTH, 20), "Test"))
+                {
+					SoundBoard.Instance.StartLocalPlayback(soundButton);
+                }
+
+                // Delete button (moved from name section)
+                if (GUI.Button(new Rect(buttonBoxMaxX - DELETE_BUTTON_WIDTH, buttonBoxY + offsetY, DELETE_BUTTON_WIDTH, 20), "Delete"))
+                {
+                    SoundBoard.Instance.SoundButtons.Remove(soundButton);
+                }
                 offsetY += 20 + SOUND_BUTTON_LINE_SPACING;
 
                 // Sound name label and field
                 GUI.Label(new Rect(buttonBoxX, buttonBoxY + offsetY, NAME_LABEL_WIDTH, 20), "Name:");
 
-                float labelInputWidth = buttonBoxMaxX - buttonBoxX - NAME_LABEL_WIDTH - DELETE_BUTTON_WIDTH;
+                float labelInputWidth = buttonBoxMaxX - buttonBoxX - NAME_LABEL_WIDTH;
                 soundButton.Name = GUI.TextField(
                     new Rect(buttonBoxX + NAME_LABEL_WIDTH, buttonBoxY + offsetY, labelInputWidth, 20),
                     soundButton.Name
                 );
-                if (GUI.Button(new Rect(buttonBoxMaxX - DELETE_BUTTON_WIDTH, buttonBoxY + offsetY, ADD_BUTTON_WIDTH, 20), "Delete"))
-                {
-                    SoundBoard.Instance.SoundButtons.Remove(soundButton);
-                }
                 offsetY += 20 + SOUND_BUTTON_LINE_SPACING;
 
                 // Volume and Enable controls
