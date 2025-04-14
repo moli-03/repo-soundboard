@@ -47,6 +47,8 @@ namespace REPOSoundBoard
             this.SoundBoard.LoadConfig(Config.SoundBoard);
             
             this.UI = go.AddComponent<SoundBoardUI>();
+            Config.UiHotkey.OnPressed(() => UI.Visible = !UI.Visible);
+            this.HotkeyManager.RegisterHotkey(Config.UiHotkey);
             
             // Register patches
             _harmony.PatchAll(typeof(Patches.PlayerVoiceChatPatch));

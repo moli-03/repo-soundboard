@@ -1,6 +1,4 @@
-﻿using System;
-using REPOSoundBoard.Core;
-using REPOSoundBoard.Patches;
+﻿using REPOSoundBoard.Patches;
 using REPOSoundBoard.UI.Components;
 using REPOSoundBoard.UI.Utils;
 using UnityEngine;
@@ -10,7 +8,7 @@ namespace REPOSoundBoard.UI
     public class SoundBoardUI : MonoBehaviour
     {
         public static SoundBoardUI Instance;
-        public static bool Visible = true;
+        public bool Visible = false;
 
         private const float DefaultWindowGap = 20f;
         
