@@ -10,6 +10,11 @@ namespace REPOSoundBoard.Core.Media
     {
         private static readonly string CacheDirectory = Path.Combine(Paths.PluginPath, $"Moli-REPOSoundBoard-{REPOSoundBoard.VERSION}/_cache");
 
+        public static void DeleteFromCache(string fileName)
+        {
+            File.Delete(Path.Combine(CacheDirectory, fileName));
+        }
+
         public static string GetFullCachePath(string cacheFileName)
         {
             return Path.Combine(CacheDirectory, cacheFileName);

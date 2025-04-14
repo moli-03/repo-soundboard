@@ -120,18 +120,12 @@ namespace REPOSoundBoard.UI.Components
                     GUILayout.Label(SoundButton.Name + " [disabled]", DisabledButtonLabelStyle, GUILayout.ExpandWidth(true));
                 }
 
+                
                 // Hotkey
-                if (SoundButton.Hotkey.Keys.Count == 0)
+                string hotkeyText = SoundButton.Hotkey.Keys.Count == 0 ? "[no hotkey]" : string.Join(" + ", SoundButton.Hotkey.Keys);
+                if (GUILayout.Button(hotkeyText, GUILayout.ExpandWidth(false)))
                 {
-                    GUILayout.Button("[no hotkey]", GUILayout.ExpandWidth(false));
-                }
-                else
-                {
-                    string keys = string.Join(" + ", SoundButton.Hotkey.Keys);
-                    if (GUILayout.Button(keys, GUILayout.ExpandWidth(false)))
-                    {
-                        SoundBoard.Instance.Play(SoundButton, true);
-                    }
+                    SoundBoard.Instance.Play(SoundButton, true);
                 }
                 
                 // Edit
@@ -188,6 +182,12 @@ namespace REPOSoundBoard.UI.Components
 
         private void OnPathChanged(string path)
         {
+            // Delete the old cache file
+            if (SoundButton.Clip != null)
+            {
+                SoundButton.Clip.DeleteCacheFile();
+            }
+            
             SoundButton.Clip = new MediaClip(path);
             SoundBoard.Instance.StartCoroutine(SoundButton.LoadClip());
         }

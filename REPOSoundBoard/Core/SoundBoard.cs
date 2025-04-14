@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Photon.Voice.Unity;
 using REPOSoundBoard.Config;
-using REPOSoundBoard.Core.Media;
 using REPOSoundBoard.Core.Hotkeys;
 using UnityEngine;
 
@@ -97,7 +95,7 @@ namespace REPOSoundBoard.Core
 				}
 			}
 
-			if (soundButton.Clip == null || soundButton.Clip.State != MediaClip.MediaClipState.Loaded)
+			if (soundButton.Clip == null || !soundButton.Clip.IsReady)
 			{
 				return;
 			}

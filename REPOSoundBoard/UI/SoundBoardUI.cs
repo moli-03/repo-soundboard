@@ -52,6 +52,7 @@ namespace REPOSoundBoard.UI
             if (!Visible) return;
             
             Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
 
 			_generalSettingsWindow.Draw();
             _soundButtonsWindow.Draw();

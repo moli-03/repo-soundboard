@@ -26,7 +26,6 @@ namespace REPOSoundBoard.Core.Media.Converter
         
         private string BuildFfmpegArguments(string sourcePath, string targetPath, ConversionOptions options)
         {
-            // Apply default options if specific ones are not provided
             return $"-i \"{sourcePath}\" -vn -acodec {options.AudioCodec} -ar {options.SampleRate} -ac {options.ChannelCount} \"{targetPath}\"";
         }
 
@@ -34,7 +33,7 @@ namespace REPOSoundBoard.Core.Media.Converter
         {
             if (!IsFfmpegInstalled())
             {
-                throw new AudioConversionException("Failed to convert video file. ffmpeg not installed.");
+                throw new AudioConversionException("Failed to convert video file. ffmpeg is not installed.");
             }
             
             if (!File.Exists(sourcePath))
