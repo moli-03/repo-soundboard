@@ -7,52 +7,55 @@ using UnityEngine;
 
 namespace REPOSoundBoard.Core.Hotkeys
 {
-    
-    public class Hotkey
-    {
-        [JsonProperty(ItemConverterType = typeof(StringEnumConverter))]
-        public List<KeyCode> Keys { get; set; } = new List<KeyCode>();
-        
-        [CanBeNull]
-        [JsonIgnore]
-        private Action Callback { get; set ; }
-        
-        [JsonIgnore]
-        public bool IsPressed { get; set; }
-        
-        // Empty constructor for deserialization
-        public Hotkey() {  }
+	public class Hotkey
+	{
+		[JsonProperty(ItemConverterType = typeof(StringEnumConverter), ObjectCreationHandling = ObjectCreationHandling.Replace)]
+		public List<KeyCode> Keys { get; set; }
+		
+		[CanBeNull]
+		[JsonIgnore]
+		private Action Callback { get; set; }
+		
+		[JsonIgnore]
+		public bool IsPressed { get; set; }
 
-        public Hotkey(KeyCode key, [CanBeNull] Action callback)
-        {
-            Keys.Add(key);
-            this.Callback = callback;
-        }
+		[JsonConstructor]
+		public Hotkey()
+		{
+			Keys = new List<KeyCode>();
+		}
 
-        public Hotkey(List<KeyCode> keys, [CanBeNull] Action callback)
-        {
-            Keys = keys;
-        }
+		public Hotkey(KeyCode key, [CanBeNull] Action callback)
+		{
+			Keys = new List<KeyCode> { key };
+			this.Callback = callback;
+		}
 
-        public Hotkey OnPressed(Action callback)
-        {
-            this.Callback = callback;
-            return this;
-        }
+		public Hotkey(List<KeyCode> keys, [CanBeNull] Action callback)
+		{
+			Keys = new List<KeyCode>(keys);
+			this.Callback = callback;
+		}
 
-        public void Trigger()
-        {
-            if (this.Callback == null)
-            {
-                return;
-            }
-            
-            this.Callback.Invoke();
-        }
+		public Hotkey OnPressed(Action callback)
+		{
+			this.Callback = callback;
+			return this;
+		}
 
-        public string ConcatKeys()
-        {
-            return string.Join(" + ", this.Keys);
-        }
-    }
+		public void Trigger()
+		{
+			if (this.Callback == null)
+			{
+				return;
+			}
+			
+			this.Callback.Invoke();
+		}
+
+		public string ConcatKeys()
+		{
+			return string.Join(" + ", this.Keys);
+		}
+	}
 }

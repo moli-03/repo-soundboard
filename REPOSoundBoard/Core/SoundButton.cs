@@ -16,6 +16,7 @@ namespace REPOSoundBoard.Core
 
         public SoundButton()
         {
+            this.Name = string.Empty;
             this.Enabled = true;
             this.Volume = 1;
             this.Hotkey = new Hotkey();

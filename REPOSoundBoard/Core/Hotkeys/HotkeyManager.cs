@@ -24,6 +24,11 @@ namespace REPOSoundBoard.Core.Hotkeys
         {
             foreach (var hotkey in this._hotkeys)
             {
+                if (hotkey.Keys.Count == 0)
+                {
+                    continue;
+                }
+                
                 if (hotkey.IsPressed)
                 {
                     HandlePressedHotkey(hotkey);

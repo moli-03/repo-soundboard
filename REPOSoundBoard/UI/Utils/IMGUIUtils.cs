@@ -14,7 +14,7 @@ namespace REPOSoundBoard.UI.Utils
         static IMGUIUtils()
         {
 			DisabledTextStyle = GUI.skin.label;
-            DisabledTextStyle.normal.textColor = new Color(60, 60, 60);
+            DisabledTextStyle.normal.textColor = new Color(120, 120, 120);
             
 			HeadingStyle = new GUIStyle(GUI.skin.label);
             HeadingStyle.normal.textColor = Color.white;
@@ -128,18 +128,18 @@ namespace REPOSoundBoard.UI.Utils
         
         #region Control Helpers
         
-        /// <summary>
-        /// Creates a labeled slider
-        /// </summary>
-        public static float LabeledSlider(string label, float value, float leftValue, float rightValue)
-        {
-            HorizontalGroup(() => {
-                GUILayout.Label(label, GUILayout.ExpandWidth(false));
-                value = GUILayout.HorizontalSlider(value, leftValue, rightValue);
-                GUILayout.Label(value.ToString("F2"), GUILayout.Width(50));
-            });
-            return value;
-        }
+		/// <summary>
+		/// Creates a labeled slider
+		/// </summary>
+		public static float LabeledSlider(string label, float value, float leftValue, float rightValue)
+		{
+			HorizontalGroup(() => {
+				GUILayout.Label(label, GUILayout.ExpandWidth(false), GUILayout.Height(20));
+				value = GUILayout.HorizontalSlider(value, leftValue, rightValue);
+				GUILayout.Label(value.ToString("F2"), GUILayout.Width(50), GUILayout.Height(20));
+			});
+			return value;
+		}
 
         /// <summary>
         /// Creates a labeled field
@@ -189,6 +189,7 @@ namespace REPOSoundBoard.UI.Utils
                     if (GUILayout.Button("Change", GUILayout.Width(60)))
                     {
                         selecting = true;
+                        GUIUtility.keyboardControl = 0; // Force unfocus on input fields to make selection work
                     }
                 }
                 else
@@ -219,6 +220,48 @@ namespace REPOSoundBoard.UI.Utils
             
             return selecting;
         }
+
+
+        public static string LabeledPathInput(string label, string originalPath, string inputPath, ref bool changing, Action<string> pathChanged)
+        {
+            bool localChanging = changing;
+            string localInputPath = inputPath;
+            HorizontalGroup(() =>
+            {
+                GUILayout.Label(label, GUILayout.ExpandWidth(false));
+
+                if (!localChanging)
+                {
+                    GUILayout.Label(originalPath, GUILayout.ExpandWidth(true));
+
+                    if (GUILayout.Button("Change", GUILayout.Width(60)))
+                    {
+                        localChanging = true;
+                    }
+                }
+                else
+                {
+                    localInputPath = GUILayout.TextField(localInputPath, GUILayout.ExpandWidth(true));
+
+                    if (GUILayout.Button("Apply", GUILayout.Width(60)))
+                    {
+                        pathChanged?.Invoke(localInputPath);
+                        localChanging = false;
+                    }
+                    
+                    if (GUILayout.Button("Reset", GUILayout.Width(60)))
+                    {
+                        localInputPath = originalPath;
+                        localChanging = false;
+                    }
+                }
+            });
+            
+            changing = localChanging;
+
+            return localInputPath;
+        }
+        
 
         /// <summary>
         /// Creates a button with confirmation

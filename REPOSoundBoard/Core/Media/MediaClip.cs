@@ -29,8 +29,7 @@ namespace REPOSoundBoard.Core.Media
         private readonly string _cachePath;
         private readonly string _cacheFileName;
         private bool _isConverted;
-        
-        
+
         public MediaClip(string path)
         {
             this.State = MediaClipState.Idle;
