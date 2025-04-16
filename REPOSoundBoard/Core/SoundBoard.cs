@@ -155,21 +155,5 @@ namespace REPOSoundBoard.Core
             this._isPlaying = false;
             this._currentSoundButton = null;
         }
-
-        private void OnDestroy()
-        {
-            // Update the config
-            var soundBoardConfig = new SoundBoardConfig();
-            soundBoardConfig.Enabled = this._enabled;
-            soundBoardConfig.StopHotkey = this.StopHotkey;
-
-            foreach (var soundButton in SoundButtons)
-            {
-                soundBoardConfig.SoundButtons.Add(soundButton.CreateConfig());
-            }
-
-            REPOSoundBoard.Instance.Config.SoundBoard = soundBoardConfig;
-            REPOSoundBoard.Instance.Config.SaveToFile();
-        }
     }
 }

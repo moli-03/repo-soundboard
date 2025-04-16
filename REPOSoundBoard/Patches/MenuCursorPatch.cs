@@ -1,4 +1,7 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
+using REPOSoundBoard.Core;
+using REPOSoundBoard.UI;
 using UnityEngine;
 
 namespace REPOSoundBoard.Patches

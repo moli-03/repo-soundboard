@@ -1,4 +1,5 @@
-﻿using REPOSoundBoard.Patches;
+﻿using System;
+using REPOSoundBoard.Patches;
 using REPOSoundBoard.UI.Components;
 using REPOSoundBoard.UI.Utils;
 using UnityEngine;
@@ -8,7 +9,24 @@ namespace REPOSoundBoard.UI
     public class SoundBoardUI : MonoBehaviour
     {
         public static SoundBoardUI Instance;
-        public bool Visible = false;
+
+        private bool _isVisible = false;
+        public bool Visible
+        {
+            get => _isVisible;
+            set
+            {
+                _isVisible = value;
+                if (_isVisible)
+                {
+                    UnlockCursor();
+                }
+                else
+                {
+                    LockCursor();
+                }
+            }
+        }
 
         private const float DefaultWindowGap = 20f;
         
@@ -45,17 +63,39 @@ namespace REPOSoundBoard.UI
             );
         }
 
+        private void Update()
+        {
+            if (Visible)
+            {
+                InputManager.instance.DisableAiming();
+                InputManager.instance.DisableMovement();
+            }
+        }
+
         private void OnGUI()
         {
-            MenuCursorPatch.HideInGameCursor = Visible;
-            
-            if (!Visible) return;
+            if (!_isVisible) return;
             
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
 			_generalSettingsWindow.Draw();
             _soundButtonsWindow.Draw();
+        }
+
+
+        private void UnlockCursor()
+        {
+            MenuCursorPatch.HideInGameCursor = true;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+
+        private void LockCursor()
+        {
+            MenuCursorPatch.HideInGameCursor = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
     }
 }

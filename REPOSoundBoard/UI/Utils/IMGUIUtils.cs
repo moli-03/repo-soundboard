@@ -241,7 +241,7 @@ namespace REPOSoundBoard.UI.Utils
                 }
                 else
                 {
-                    localInputPath = GUILayout.TextField(localInputPath, GUILayout.ExpandWidth(true));
+                    localInputPath = GUILayout.TextField(localInputPath.Replace("\"", ""), GUILayout.ExpandWidth(true));
 
                     if (GUILayout.Button("Apply", GUILayout.Width(60)))
                     {

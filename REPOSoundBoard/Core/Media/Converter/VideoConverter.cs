@@ -101,7 +101,7 @@ namespace REPOSoundBoard.Core.Media.Converter
         
         private static bool IsFfmpegInstalled()
         {
-            if (_isFfmpegInstalled == null)
+            if (!_isFfmpegInstalled.HasValue)
             {
                 try
                 {
