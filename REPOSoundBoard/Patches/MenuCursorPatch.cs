@@ -8,7 +8,6 @@ namespace REPOSoundBoard.Patches
 {
     public class MenuCursorPatch
     {
-        private static GameObject _buttonMesh;
         public static bool HideInGameCursor = false;
 
         [HarmonyPatch(typeof(CursorManager), "Update")]

@@ -4,7 +4,7 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "Moli"
 name = "REPOSoundBoard"
-versionNumber = "0.1.1"
+versionNumber = "0.2.0"
 description = "Adds a simple soundboard to the game that works with proximity voice chat. Uses hotkeys to play the sound buttons."
 websiteUrl = "https://github.com/moli-03/repo-soundboard"
 containsNsfwContent = false
@@ -25,11 +25,6 @@ target = "./"
 [[build.copy]]
 source = "./CHANGELOG.md"
 target = "./"
-
-[[build.copy]]
-source = "./sample.config.json"
-target = "./BepInEx/config/Moli.REPOSoundBoard.json"
-
 
 [publish]
 repository = "https://thunderstore.io"

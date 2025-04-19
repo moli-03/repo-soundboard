@@ -2,6 +2,12 @@
 
 All notable changes to the mod will be documented in this file.
 
+## v0.2.0 - 2025-04-19
+
+### Added
+- A UI to manage the sound buttons / the sound board
+- Support for title-screen audio playback
+
 ## v0.1.1 - 2025-04-09
 
 ### Added

@@ -14,13 +14,13 @@ namespace REPOSoundBoard
     {
         public const string GUID = "com.moli.repo-soundboard";
         public const string NAME = "REPOSoundBoard";
-        public const string VERSION = "0.1.1";
+        public const string VERSION = "0.2.0";
         
-        private static Harmony _harmony = new Harmony(GUID);
+        private static readonly Harmony _harmony = new Harmony(GUID);
         public static REPOSoundBoard Instance { get; private set; }
         
-        public static ManualLogSource Logger;
-        public AppConfig Config { get; private set; }
+        public new static ManualLogSource Logger;
+        public new AppConfig Config { get; private set; }
 
         public HotkeyManager HotkeyManager;
         public SoundBoard SoundBoard;
@@ -54,6 +54,22 @@ namespace REPOSoundBoard
             _harmony.PatchAll(typeof(Patches.ChatManagerPatch));
             _harmony.PatchAll(typeof(Patches.PlayerVoiceChatPatch));
             _harmony.PatchAll(typeof(Patches.MenuCursorPatch));
+        }
+
+        public void SaveConfig()
+        {
+            // Update the config
+            var soundBoardConfig = new SoundBoardConfig();
+            soundBoardConfig.Enabled = SoundBoard.Instance.Enabled;
+            soundBoardConfig.StopHotkey = SoundBoard.Instance.StopHotkey;
+
+            foreach (var soundButton in SoundBoard.Instance.SoundButtons)
+            {
+                soundBoardConfig.SoundButtons.Add(soundButton.CreateConfig());
+            }
+
+            Config.SoundBoard = soundBoardConfig;
+            Config.SaveToFile();
         }
     }
 }

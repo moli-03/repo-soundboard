@@ -18,18 +18,7 @@ namespace REPOSoundBoard.UI.Components
             {
                 if (GUILayout.Button("Save changes", GUILayout.ExpandWidth(true)))
                 {
-                    // Update the config
-                    var soundBoardConfig = new SoundBoardConfig();
-                    soundBoardConfig.Enabled = SoundBoard.Instance.Enabled;
-                    soundBoardConfig.StopHotkey = SoundBoard.Instance.StopHotkey;
-
-                    foreach (var soundButton in SoundBoard.Instance.SoundButtons)
-                    {
-                        soundBoardConfig.SoundButtons.Add(soundButton.CreateConfig());
-                    }
-
-                    REPOSoundBoard.Instance.Config.SoundBoard = soundBoardConfig;
-                    REPOSoundBoard.Instance.Config.SaveToFile();
+                    REPOSoundBoard.Instance.SaveConfig();
                 }
 
                 if (GUILayout.Button("Close", GUILayout.ExpandWidth(false)))

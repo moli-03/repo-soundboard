@@ -1,4 +1,7 @@
 {
+    "UiHotkey": {
+        "Keys": ["F4"]
+    },
     "SoundBoard": {
         "Enabled": true,
         "StopHotkey": {

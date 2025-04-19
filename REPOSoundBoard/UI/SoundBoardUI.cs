@@ -97,5 +97,11 @@ namespace REPOSoundBoard.UI
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
+
+
+        private void OnDestroy()
+        {
+            REPOSoundBoard.Instance.SaveConfig();
+        }
     }
 }

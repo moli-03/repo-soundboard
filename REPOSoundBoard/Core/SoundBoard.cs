@@ -67,6 +67,9 @@ namespace REPOSoundBoard.Core
 
             REPOSoundBoard.Instance.HotkeyManager.RegisterHotkey(soundButton.Hotkey);
             this.SoundButtons.Add(soundButton);
+
+            string hotkey = soundButton.Hotkey != null ? string.Join(" + ", soundButton.Hotkey.Keys) : "none";
+            REPOSoundBoard.Logger.LogInfo($"Sound Button registered: {soundButton.Name}, with hotkey: {hotkey} and path: {soundButton.Clip?.OriginalPath}");
         }
 
         public void RemoveSoundButton(SoundButton soundButton)
