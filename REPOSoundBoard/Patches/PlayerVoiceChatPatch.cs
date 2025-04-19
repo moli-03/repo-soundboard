@@ -16,9 +16,7 @@ namespace REPOSoundBoard.Patches
                 return;
             }
             
-            var audioSource = __instance.gameObject.AddComponent<AudioSource>();
             REPOSoundBoard.Instance.SoundBoard.ChangeRecorder(___recorder);
-            REPOSoundBoard.Instance.SoundBoard.ChangeAudioSource(audioSource);
         }
     }
 }

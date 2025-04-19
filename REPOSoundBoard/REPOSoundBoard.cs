@@ -1,9 +1,10 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using REPOSoundBoard.Sound;
+using REPOSoundBoard.Core;
 using REPOSoundBoard.Config;
-using REPOSoundBoard.Hotkeys;
+using REPOSoundBoard.Core.Hotkeys;
+using REPOSoundBoard.UI;
 using UnityEngine;
 
 namespace REPOSoundBoard
@@ -11,18 +12,19 @@ namespace REPOSoundBoard
     [BepInPlugin(GUID, NAME, VERSION)]
     public class REPOSoundBoard : BaseUnityPlugin
     {
-        private const string GUID = "com.moli.repo-soundboard";
-        private const string NAME = "REPOSoundBoard";
-        private const string VERSION = "0.1.1";
+        public const string GUID = "com.moli.repo-soundboard";
+        public const string NAME = "REPOSoundBoard";
+        public const string VERSION = "0.2.0";
         
-        private static Harmony _harmony = new Harmony(GUID);
+        private static readonly Harmony _harmony = new Harmony(GUID);
         public static REPOSoundBoard Instance { get; private set; }
         
-        public ManualLogSource LOG => Logger;
-        public AppConfig Config { get; private set; }
+        public new static ManualLogSource Logger;
+        public new AppConfig Config { get; private set; }
 
         public HotkeyManager HotkeyManager;
         public SoundBoard SoundBoard;
+        public SoundBoardUI UI;
         
         private void Awake()
         {
@@ -32,17 +34,42 @@ namespace REPOSoundBoard
             }
             
             Instance = this;
+            REPOSoundBoard.Logger = base.Logger;
             Config = AppConfig.LoadConfig();
 
             var go = new GameObject("REPOSoundBoardMod");
-            DontDestroyOnLoad(go);
             go.hideFlags = HideFlags.HideAndDontSave;
+            DontDestroyOnLoad(go);
+            
             this.HotkeyManager = go.AddComponent<HotkeyManager>();
+            
             this.SoundBoard = go.AddComponent<SoundBoard>();
             this.SoundBoard.LoadConfig(Config.SoundBoard);
             
+            this.UI = go.AddComponent<SoundBoardUI>();
+            Config.UiHotkey.OnPressed(() => UI.Visible = !UI.Visible);
+            this.HotkeyManager.RegisterHotkey(Config.UiHotkey);
+            
             // Register patches
+            _harmony.PatchAll(typeof(Patches.ChatManagerPatch));
             _harmony.PatchAll(typeof(Patches.PlayerVoiceChatPatch));
+            _harmony.PatchAll(typeof(Patches.MenuCursorPatch));
+        }
+
+        public void SaveConfig()
+        {
+            // Update the config
+            var soundBoardConfig = new SoundBoardConfig();
+            soundBoardConfig.Enabled = SoundBoard.Instance.Enabled;
+            soundBoardConfig.StopHotkey = SoundBoard.Instance.StopHotkey;
+
+            foreach (var soundButton in SoundBoard.Instance.SoundButtons)
+            {
+                soundBoardConfig.SoundButtons.Add(soundButton.CreateConfig());
+            }
+
+            Config.SoundBoard = soundBoardConfig;
+            Config.SaveToFile();
         }
     }
 }
